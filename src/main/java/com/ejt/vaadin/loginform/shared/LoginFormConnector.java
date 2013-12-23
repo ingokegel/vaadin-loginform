@@ -1,10 +1,10 @@
 package com.ejt.vaadin.loginform.shared;
 
 import com.ejt.vaadin.loginform.LoginForm;
+import com.ejt.vaadin.loginform.client.LoginFormGWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.ejt.vaadin.loginform.client.LoginFormContainerGWT;
 
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
@@ -18,7 +18,7 @@ import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(LoginForm.class)
-public class LoginFormContainerConnector extends AbstractSingleComponentContainerConnector {
+public class LoginFormConnector extends AbstractSingleComponentContainerConnector {
 
     public static final String LOGIN_URL = "/loginForm";
 
@@ -31,13 +31,13 @@ public class LoginFormContainerConnector extends AbstractSingleComponentContaine
     }
 
     @Override
-    public LoginFormContainerGWT getWidget() {
-        return (LoginFormContainerGWT)super.getWidget();
+    public LoginFormGWT getWidget() {
+        return (LoginFormGWT)super.getWidget();
     }
 
             @Override
-    public LoginFormContainerState getState() {
-        return (LoginFormContainerState)super.getState();
+    public LoginFormState getState() {
+        return (LoginFormState)super.getState();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class LoginFormContainerConnector extends AbstractSingleComponentContaine
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
-        LoginFormContainerState state = getState();
+        LoginFormState state = getState();
         userField = configureTextField(state.userNameFieldConnector, "username");
         passwordField = configureTextField(state.passwordFieldConnector, "password");
         addSubmitButtonClickHandler(state.loginButtonConnector);

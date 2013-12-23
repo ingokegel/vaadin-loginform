@@ -1,6 +1,6 @@
 package com.ejt.vaadin.loginform;
 
-import com.ejt.vaadin.loginform.shared.LoginFormContainerState;
+import com.ejt.vaadin.loginform.shared.LoginFormState;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -39,7 +39,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
     private boolean initialized;
 
     protected LoginForm() {
-        LoginFormContainerState state = getState();
+        LoginFormState state = getState();
         state.userNameFieldConnector = createUserNameField();
         state.passwordFieldConnector = createPasswordField();
         state.loginButtonConnector = createLoginButton();
@@ -137,7 +137,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
     }
 
     @Override
-    protected LoginFormContainerState getState() {
-        return (LoginFormContainerState)super.getState();
+    protected LoginFormState getState() {
+        return (LoginFormState)super.getState();
     }
 }
