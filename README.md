@@ -1,33 +1,48 @@
-# Vaadin SizeReporter
+# Vaadin LoginForm
 
 ## Usage
-Vaadin SizeReporter is an add-on for [Vaadin](https://vaadin.com). It requires at least Vaadin 7.
+Vaadin LoginForm is an add-on for [Vaadin](https://vaadin.com). It requires at least Vaadin 7.
 Specifically it will not work with Vaadin 6. To use it, you have to compile your own widgetset, using the
 precompiled widget set will not work with this addon.
 
-To get the size of a component in the browse, create an instance of SizeReporter:
+To create a login form that supports auto-completion and auto-fill for modern versions of Firefox, Chrome, IE and
+Safari, derive from com.ejt.vaadin.loginform.LoginForm, like this:
 
-    SizeReporter sizeReporter = new SizeReporter(component);
+    public class SimpleLoginForm extends LoginForm {
 
-After the layout has been realized in the browser, you can query width and height:
+        public SimpleLoginForm() {
+            VerticalLayout layout = new VerticalLayout();
+            layout.setMargin(true);
+            layout.setSpacing(true);
 
-    int width = sizeReporter.getWidth();
-    int height = sizeReporter.getWidth();
+            layout.addComponent(getUserNameField());
+            layout.addComponent(getPasswordField());
+            layout.addComponent(getLoginButton());
 
-You cannot query these values immediately when constructing the component. To wait for the
-first size report and all subsequent resizes, register a `ComponentResizeListener`
+            setContent(layout);
+        }
 
-    sizeReporter.addResizeListener(new ComponentResizeListener() {
-         @Override
-         public void sizeChanged(ComponentResizeEvent event) {
-             // use event.getWidth() and  event.getHeight()
-         }
-     });
+        @Override
+        protected void login() {
+            System.err.println(
+                "Logged in with user name " + getUserNameField().getValue() +
+                " and password of length " + getPasswordField().getValue().length()
+            );
+        }
+    }
+
+Use the `getUserNameField`, `getPasswordField` and `getLoginButton` to get the components that work with password managers,
+add them to your layout and call setContent on the LoginForm instance. In the implementation of the abstract `login`
+method, query the values of the user name and password fields in order to validate the login.
 
 See the `TestUi` class for a runnable example.
 
 ## Build instructions
 
-The addon is built with gradle. The default tasks builds the distribution JAR file in `build\libs`.
+The addon is built with gradle. The default task builds the distribution JAR file in `build\libs`.
 To compile the widgetset for running the Tomcat run configuration in the IntelliJ IDEA project,
-run the "compileWidgetSet" gradle task first.
+run the "compileWidgetSet" gradle task first. No gradle installation is required, executing
+
+    gradlew
+
+in the root directory will download gradle and build the jar file.
