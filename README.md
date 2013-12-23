@@ -35,6 +35,9 @@ Use the `getUserNameField`, `getPasswordField` and `getLoginButton` to get the c
 add them to your layout and call setContent on the LoginForm instance. In the implementation of the abstract `login`
 method, query the values of the user name and password fields in order to validate the login.
 
+In technical terms, the add-on wraps the login UI in an HTML form element that submits a POST request to a dummy resource.
+The text field for user name and the password field have special attributes so that they are recognized by the password manager.
+
 See the `TestUi` class for a runnable example.
 
 ## Build instructions
