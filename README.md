@@ -49,3 +49,8 @@ run the "compileWidgetSet" gradle task first. No gradle installation is required
     gradlew
 
 in the root directory will download gradle and build the jar file.
+
+
+## License
+
+Vaadin LoginForm is released under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
