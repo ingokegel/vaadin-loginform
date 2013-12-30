@@ -40,6 +40,17 @@ The text field for user name and the password field have special attributes so t
 
 See the `TestUi` class for a runnable example.
 
+## Troubleshooting
+
+If the password manager is not triggered, make sure that you have followed these steps:
+
+1. Recompiled your widget set with this add-on
+2. Created a layout that uses the user name and password text fields and optionally the login button provided by the login form component (see the example above)
+3. Called `setContent(...)` with that layout on the login form
+4. Added the login form component to your layout
+
+Just using the text fields and buttons provided by the login form component on their own will not work.
+
 ## Build instructions
 
 The addon is built with gradle. The default task builds the distribution JAR file in `build\libs`.
