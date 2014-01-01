@@ -36,7 +36,7 @@ import com.vaadin.shared.ui.Connect;
 @Connect(LoginForm.class)
 public class LoginFormConnector extends AbstractSingleComponentContainerConnector {
 
-    public static final String LOGIN_URL = "loginForm";
+    public static final String LOGIN_URL = "/loginForm";
 
     private VTextField passwordField;
     private VTextField userField;

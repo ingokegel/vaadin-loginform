@@ -60,6 +60,14 @@ task compileWidgetSet {
     }
 }
 
+
+task devmode(type: JavaExec) {
+    classpath = compileClassPath
+    main = 'com.google.gwt.dev.DevMode'
+    jvmArgs = ['-XX:MaxPermSize=400m', '-Xmx800m']
+    args = ['-noserver', '-war', 'build/idea/artifacts/exploded_war/VAADIN/widgetsets', 'com.ejt.vaadin.loginform.WidgetSet', '-startupUrl', 'http://localhost:8080/test']
+}
+
 jar {
     baseName 'loginform'
     from sourceSets.main.java.srcDirs

@@ -51,7 +51,6 @@ import java.io.PrintWriter;
 public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     private boolean initialized;
-    private String loginUrlWithContextPath;
 
     protected LoginForm() {
         LoginFormState state = getState();
@@ -60,11 +59,10 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         state.loginButtonConnector = createLoginButton();
 
         String contextPath = VaadinService.getCurrentRequest().getContextPath();
-        if (!contextPath.endsWith("/")) {
-            contextPath += "/";
+        if (contextPath.endsWith("/")) {
+            contextPath = contextPath.substring(0, contextPath.length() - 1);
         }
         state.contextPath = contextPath;
-        loginUrlWithContextPath = contextPath + LoginFormConnector.LOGIN_URL;
 
         addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
             @Override
@@ -76,7 +74,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
             @Override
             public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
-                if (loginUrlWithContextPath.equals(request.getPathInfo())) {
+                if (LoginFormConnector.LOGIN_URL.equals(request.getPathInfo())) {
                     response.setContentType("text/html; charset=utf-8");
                     response.setCacheTime(-1);
                     PrintWriter writer = response.getWriter();
