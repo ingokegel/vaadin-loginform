@@ -18,9 +18,12 @@ package com.ejt.vaadin.loginform.shared;
 
 import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.Connector;
+import com.vaadin.shared.annotations.DelegateToWidget;
 
 public class LoginFormState extends AbstractComponentState {
     public Connector userNameFieldConnector;
     public Connector passwordFieldConnector;
     public Connector loginButtonConnector;
+    @DelegateToWidget
+    public String contextPath;
 }

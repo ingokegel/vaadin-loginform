@@ -16,14 +16,12 @@
 
 package com.ejt.vaadin.loginform;
 
+import com.ejt.vaadin.loginform.shared.LoginFormConnector;
 import com.ejt.vaadin.loginform.shared.LoginFormState;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.RequestHandler;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.*;
 import com.vaadin.ui.AbstractSingleComponentContainer;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -53,12 +51,20 @@ import java.io.PrintWriter;
 public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     private boolean initialized;
+    private String loginUrlWithContextPath;
 
     protected LoginForm() {
         LoginFormState state = getState();
         state.userNameFieldConnector = createUserNameField();
         state.passwordFieldConnector = createPasswordField();
         state.loginButtonConnector = createLoginButton();
+
+        String contextPath = VaadinService.getCurrentRequest().getContextPath();
+        if (!contextPath.endsWith("/")) {
+            contextPath += "/";
+        }
+        state.contextPath = contextPath;
+        loginUrlWithContextPath = contextPath + LoginFormConnector.LOGIN_URL;
 
         addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
             @Override
@@ -70,7 +76,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
             @Override
             public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
-                if ("/loginForm".equals(request.getPathInfo())) {
+                if (loginUrlWithContextPath.equals(request.getPathInfo())) {
                     response.setContentType("text/html; charset=utf-8");
                     response.setCacheTime(-1);
                     PrintWriter writer = response.getWriter();
