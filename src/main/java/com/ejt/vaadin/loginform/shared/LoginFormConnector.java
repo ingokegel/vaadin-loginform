@@ -22,6 +22,8 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -51,7 +53,20 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
         return (LoginFormGWT)super.getWidget();
     }
 
+    @Override
+    protected void init() {
+        super.init();
+
+        final LoginFormRpc loginFormRpc = getRpcProxy(LoginFormRpc.class);
+        getWidget().addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
             @Override
+            public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
+                loginFormRpc.submitCompleted();
+            }
+        });
+    }
+
+    @Override
     public LoginFormState getState() {
         return (LoginFormState)super.getState();
     }

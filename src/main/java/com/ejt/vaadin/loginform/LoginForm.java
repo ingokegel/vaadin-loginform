@@ -17,6 +17,7 @@
 package com.ejt.vaadin.loginform;
 
 import com.ejt.vaadin.loginform.shared.LoginFormConnector;
+import com.ejt.vaadin.loginform.shared.LoginFormRpc;
 import com.ejt.vaadin.loginform.shared.LoginFormState;
 
 import com.vaadin.event.ShortcutAction;
@@ -86,16 +87,32 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
             }
         });
 
+        registerRpc(new LoginFormRpc() {
+            @Override
+            public void submitCompleted() {
+                LoginForm.this.submitCompleted();
+            }
+        });
+
         initialized = true;
     }
 
     protected abstract void login();
 
     /**
+     * If you have to change the URL after the login, you cannot do that in the implementation of {@link #login()},
+     * because the POST request from the dummy form that triggers the password manager could be canceled.
+     * Instead, you can then override this method to change the URL once the browser has completed the submission
+     * of the dummy form.
+     */
+    protected void submitCompleted() {
+    }
+
+    /**
      * Get the user name field. Call when building the layout and when validating a login.
      * @return the user name field
      */
-    public TextField getUserNameField() {
+    protected TextField getUserNameField() {
         return (TextField)getState().userNameFieldConnector;
     }
 
@@ -103,7 +120,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      * Get the password field. Call when building the layout and when validating a login.
      * @return the password field
      */
-    public PasswordField getPasswordField() {
+    protected PasswordField getPasswordField() {
         return (PasswordField)getState().passwordFieldConnector;
     }
 
@@ -111,7 +128,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      * Get the login button. Call when building the layout.
      * @return the password field
      */
-    public Button getLoginButton() {
+    protected Button getLoginButton() {
         return (Button)getState().loginButtonConnector;
     }
 
