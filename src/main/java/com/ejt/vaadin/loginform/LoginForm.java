@@ -52,6 +52,7 @@ import java.io.PrintWriter;
 public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     private boolean initialized;
+    private LoginMode loginMode = LoginMode.DIRECT;
 
     protected LoginForm() {
         LoginFormState state = getState();
@@ -65,10 +66,11 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         }
         state.contextPath = contextPath;
 
+        //TODO limit shortcuts to login form
         addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                login();
+                directLogin();
             }
         });
 
@@ -90,23 +92,25 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         registerRpc(new LoginFormRpc() {
             @Override
             public void submitCompleted() {
-                LoginForm.this.submitCompleted();
+                if (loginMode == LoginMode.DEFERRED) {
+                    login();
+                }
             }
         });
 
         initialized = true;
     }
 
-    protected abstract void login();
-
     /**
-     * If you have to change the URL after the login, you cannot do that in the implementation of {@link #login()},
-     * because the POST request from the dummy form that triggers the password manager could be canceled.
-     * Instead, you can then override this method to change the URL once the browser has completed the submission
-     * of the dummy form.
+     * Set the {@link LoginMode} for this login form.
+     * The default is {@link LoginMode#DIRECT}
+     * @param loginMode the login mode
      */
-    protected void submitCompleted() {
+    public void setLoginMode(LoginMode loginMode) {
+        this.loginMode = loginMode;
     }
+
+    protected abstract void login();
 
     /**
      * Get the user name field. Call when building the layout and when validating a login.
@@ -161,10 +165,16 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         Button button = new Button("Login", new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                login();
+                directLogin();
             }
         });
         return button;
+    }
+
+    private void directLogin() {
+        if (loginMode == LoginMode.DIRECT) {
+            login();
+        }
     }
 
     private void checkInitialized() {
