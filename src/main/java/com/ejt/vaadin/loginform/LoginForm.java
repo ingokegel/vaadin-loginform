@@ -28,19 +28,21 @@ import java.io.PrintWriter;
 
 /**
  * Login form with auto-completion and auto-fill for all major browsers.
- * Derive from this class and build a layout in the constructor, then call
- * setContent() with that layout.
+ * Derive from this class and implement the abstract
+ * {@link #createContent(com.vaadin.ui.TextField, com.vaadin.ui.PasswordField, com.vaadin.ui.Button)} method
+ * to build the layout using the text fields and login button that are passed to that method.
+ * The supplied components are specially treated so that they work with password managers.
  * <p>
- * When building the layou, use the {@link #getUserNameField()}, {@link #getPasswordField()} and
- * {@link #getLoginButton()} methods to get the fields that are specially treated so that they work with
- * password managers.
+ * Implement the abstract {@link #login(String, String)} method to handle a login. User name and password are
+ * passed to this method. If you need to change the URL as part of the login procedure, call
+ * {@link #setLoginMode(LoginMode)} with the argument {@link LoginMode#DEFERRED} in your implementation of
+ * {@link #createContent(com.vaadin.ui.TextField, com.vaadin.ui.PasswordField, com.vaadin.ui.Button) createContent}.
  * <p>
- * Implement the abstract {@link #login(String, String)} method to handle a login. User name and password are available
- * from <tt>getUserNameField().getValue()</tt> and <tt>getPasswordField().getValue()</tt>.
- * <p>
- * To customize the fields, you can override {@link #createUserNameField()}, {@link #createPasswordField()} and
- * {@link #createLoginButton()}. These methods are called automatically and cannot be called by your code.
- *
+ * To customize the fields or to replace them with your own implementations, you can override
+ * {@link #createUserNameField()}, {@link #createPasswordField()} and {@link #createLoginButton()}.
+ * These methods are called automatically and cannot be called by your code.
+ * Captions can be reset by overriding {@link #getUserNameFieldCaption()}, {@link #getPasswordFieldCaption()}
+ * and {@link #getLoginButtonCaption()}.
  */
 public abstract class LoginForm extends AbstractSingleComponentContainer {
 
@@ -48,51 +50,6 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
     private LoginMode loginMode = LoginMode.DIRECT;
 
     protected LoginForm() {
-        LoginFormState state = getState();
-        state.userNameFieldConnector = createUserNameField();
-        state.passwordFieldConnector = createPasswordField();
-        state.loginButtonConnector = createLoginButton();
-
-        String contextPath = VaadinService.getCurrentRequest().getContextPath();
-        if (contextPath.endsWith("/")) {
-            contextPath = contextPath.substring(0, contextPath.length() - 1);
-        }
-        state.contextPath = contextPath;
-
-        VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
-            @Override
-            public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
-                if (LoginFormConnector.LOGIN_URL.equals(request.getPathInfo())) {
-                    response.setContentType("text/html; charset=utf-8");
-                    response.setCacheTime(-1);
-                    PrintWriter writer = response.getWriter();
-                    writer.append("<html>Success</html>");
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-
-        registerRpc(new LoginFormRpc() {
-            @Override
-            public void submitted() {
-                if (loginMode == LoginMode.DIRECT) {
-                    login();
-                }
-            }
-
-            @Override
-            public void submitCompleted() {
-                if (loginMode == LoginMode.DEFERRED) {
-                    login();
-                }
-            }
-        });
-
-        setContent(createContent(getUserNameField(), getPasswordField(), getLoginButton()));
-
-        initialized = true;
     }
 
     /**
@@ -196,10 +153,68 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         return (LoginFormState)super.getState();
     }
 
+    @Override
+    public void attach() {
+        super.attach();
+        init();
+    }
+
     private void checkInitialized() {
         if (initialized) {
             throw new IllegalStateException("Already initialized. The create methods may not be called explicitly.");
         }
+    }
+
+    private void init() {
+        if (initialized) {
+            return;
+        }
+
+        LoginFormState state = getState();
+        state.userNameFieldConnector = createUserNameField();
+        state.passwordFieldConnector = createPasswordField();
+        state.loginButtonConnector = createLoginButton();
+
+        String contextPath = VaadinService.getCurrentRequest().getContextPath();
+        if (contextPath.endsWith("/")) {
+            contextPath = contextPath.substring(0, contextPath.length() - 1);
+        }
+        state.contextPath = contextPath;
+
+        VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
+            @Override
+            public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
+                if (LoginFormConnector.LOGIN_URL.equals(request.getPathInfo())) {
+                    response.setContentType("text/html; charset=utf-8");
+                    response.setCacheTime(-1);
+                    PrintWriter writer = response.getWriter();
+                    writer.append("<html>Success</html>");
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        registerRpc(new LoginFormRpc() {
+            @Override
+            public void submitted() {
+                if (loginMode == LoginMode.DIRECT) {
+                    login();
+                }
+            }
+
+            @Override
+            public void submitCompleted() {
+                if (loginMode == LoginMode.DEFERRED) {
+                    login();
+                }
+            }
+        });
+
+        setContent(createContent(getUserNameField(), getPasswordField(), getLoginButton()));
+
+        initialized = true;
     }
 
     private TextField getUserNameField() {

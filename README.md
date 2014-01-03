@@ -6,50 +6,56 @@ Specifically it will not work with Vaadin 6. To use it, you have to compile your
 precompiled widget set will not work with this addon.
 
 To create a login form that supports auto-completion and auto-fill for modern versions of Firefox, Chrome, IE and
-Safari, derive from com.ejt.vaadin.loginform.LoginForm, like this:
+Safari, derive from `com.ejt.vaadin.loginform.VerticalLoginForm` or `com.ejt.vaadin.loginform.HorizontalLoginForm`,
+like this:
 
-    public class SimpleLoginForm extends LoginForm {
-
-        public SimpleLoginForm() {
-            VerticalLayout layout = new VerticalLayout();
-            layout.setMargin(true);
-            layout.setSpacing(true);
-
-            layout.addComponent(getUserNameField());
-            layout.addComponent(getPasswordField());
-            layout.addComponent(getLoginButton());
-
-            setContent(layout);
-        }
+    public class SimpleLoginForm extends VerticalLoginForm {
 
         @Override
-        protected void login() {
+        protected void login(String userName, String password) {
             System.err.println(
-                "Logged in with user name " + getUserNameField().getValue() +
-                " and password of length " + getPasswordField().getValue().length()
+                "Logged in with user name " + userName +
+                " and password of length " + password.length()
             );
         }
     }
 
-Use the `getUserNameField`, `getPasswordField` and `getLoginButton` to get the components that work with password managers,
-add them to your layout and call setContent on the LoginForm instance. In the implementation of the abstract `login`
-method, query the values of the user name and password fields in order to validate the login.
+For arbitrary layouts, extend `com.ejt.vaadin.loginform.LoginForm` and implement `createContent` as well:
+
+    public abstract class MyLoginForm extends LoginForm {
+        @Override
+        protected Component createContent(TextField userNameField, PasswordField passwordField, Button loginButton) {
+            HorizontalLayout layout = new HorizontalLayout();
+            layout.setSpacing(true);
+            layout.setMargin(true);
+
+            layout.addComponent(userNameField);
+            layout.addComponent(passwordField);
+            layout.addComponent(loginButton);
+            layout.setComponentAlignment(loginButton, Alignment.BOTTOM_LEFT);
+            return layout;
+        }
+
+        @Override
+        protected void login(String userName, String password) {
+            System.err.println(
+                "Logged in with user name " + userName +
+                " and password of length " + password.length()
+            );
+        }
+    }
+
+
+The `userNameField`, `passwordField` and `loginButton` components are specially prepared to work with password managers.
+You can override `createUserNameField`, `createPasswordField` and `createLoginButton` to replace the components
+with your own implementations or to add styles. To change captions, you can override `getUserNameFieldCaption`,
+`getPasswordFieldCaption` and `getLoginButtonCaption`.
 
 In technical terms, the add-on wraps the login UI in an HTML form element that submits a POST request to a dummy resource.
-The text field for user name and the password field have special attributes so that they are recognized by the password manager.
+The text field for user name and the password field receive special attributes so that they are recognized by the
+password manager.
 
 See the `TestUi` class for a runnable example.
-
-## Troubleshooting
-
-If the password manager is not triggered, make sure that you have followed these steps:
-
-1. Recompiled your widget set with this add-on
-2. Created a layout that uses the user name and password text fields and optionally the login button provided by the login form component (see the example above)
-3. Called `setContent(...)` with that layout on the login form
-4. Added the login form component to your layout
-
-Just using the text fields and buttons provided by the login form component on their own will not work.
 
 ## Build instructions
 
