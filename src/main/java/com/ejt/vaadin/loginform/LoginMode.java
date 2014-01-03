@@ -22,9 +22,9 @@ package com.ejt.vaadin.loginform;
  */
 public enum LoginMode {
     /**
-     * Direct mode means that {@link LoginForm#login()} will be called as soon as the user clicks on the login
+     * Direct mode means that {@link LoginForm#login(String, String)} will be called as soon as the user clicks on the login
      * button or presses the enter key in the user name or password text fields.
-     * In direct mode, you cannot change the URL in the {@link LoginForm#login()} method, otherwise the
+     * In direct mode, you cannot change the URL in the {@link LoginForm#login(String, String)} method, otherwise the
      * password manager will not be triggered.
      * <p/>
      * This is the default mode for a new login form instance.
@@ -32,9 +32,9 @@ public enum LoginMode {
     DIRECT,
 
     /**
-     * Deferred mode means that {@link LoginForm#login()} will be called after the dummy form submission that
+     * Deferred mode means that {@link LoginForm#login(String, String)} will be called after the dummy form submission that
      * triggers the password manager has completed. In deferred mode, it is possible to change the URL
-     * in the {@link LoginForm#login()} method. The drawbacks with resepect to deferred mode are the following:
+     * in the {@link LoginForm#login(String, String)} method. The drawbacks with resepect to deferred mode are the following:
      * <ul>
      * <li>There will be a slight UI lag between the user action and the UI change</li>
      * <li>Any UI change

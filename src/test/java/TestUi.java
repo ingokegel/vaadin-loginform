@@ -1,9 +1,9 @@
+import com.ejt.vaadin.loginform.DefaultHorizontalLoginForm;
+import com.ejt.vaadin.loginform.DefaultVerticalLoginForm;
 import com.ejt.vaadin.loginform.LoginForm;
 import com.ejt.vaadin.loginform.LoginMode;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 public class TestUi extends UI{
 
@@ -20,28 +20,19 @@ public class TestUi extends UI{
         setContent(mainLayout);
     }
 
-    public class SimpleLoginForm extends LoginForm {
+    public class SimpleLoginForm extends DefaultHorizontalLoginForm {
         private LoginMode loginMode;
 
         public SimpleLoginForm(LoginMode loginMode) {
             this.loginMode = loginMode;
-            VerticalLayout layout = new VerticalLayout();
-            layout.setSpacing(true);
-            layout.setMargin(true);
-
-            layout.addComponent(getUserNameField());
-            layout.addComponent(getPasswordField());
-            layout.addComponent(getLoginButton());
             setLoginMode(loginMode);
-
-            setContent(layout);
         }
 
         @Override
-        protected void login() {
+        protected void login(String userName, String password) {
             mainLayout.addComponent(new Label(
-                "Logged in with user name " + getUserNameField().getValue() +
-                " and password of length " + getPasswordField().getValue().length() +
+                "Logged in with user name " + userName +
+                " and password of length " + password.length() +
                 ", login mode " + loginMode
             ));
         }

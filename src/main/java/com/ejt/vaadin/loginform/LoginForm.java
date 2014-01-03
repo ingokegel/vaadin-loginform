@@ -21,12 +21,7 @@ import com.ejt.vaadin.loginform.shared.LoginFormRpc;
 import com.ejt.vaadin.loginform.shared.LoginFormState;
 
 import com.vaadin.server.*;
-import com.vaadin.ui.AbstractSingleComponentContainer;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,7 +35,7 @@ import java.io.PrintWriter;
  * {@link #getLoginButton()} methods to get the fields that are specially treated so that they work with
  * password managers.
  * <p>
- * Implement the abstract {@link #login()} method to handle a login. User name and password are available
+ * Implement the abstract {@link #login(String, String)} method to handle a login. User name and password are available
  * from <tt>getUserNameField().getValue()</tt> and <tt>getPasswordField().getValue()</tt>.
  * <p>
  * To customize the fields, you can override {@link #createUserNameField()}, {@link #createPasswordField()} and
@@ -95,7 +90,43 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
             }
         });
 
+        setContent(createContent(getUserNameField(), getPasswordField(), getLoginButton()));
+
         initialized = true;
+    }
+
+    /**
+     * Create the content for the login form with the supplied user name field, password field and the login button.
+     * You cannot use any other text fields or buttons for this purpose. To replace these components with your own
+     * implementations, override {@link #createUserNameField()}, {@link #createPasswordField()} and
+     * {@link #createLoginButton()}. If you only want to change the default captions, override
+     * {@link #getUserNameFieldCaption()}, {@link #getPasswordFieldCaption()} and {@link #getLoginButtonCaption()}.
+     * You do not have to use the login button in your layout.
+     * @param userNameField the user name text field
+     * @param passwordField the password field
+     * @param loginButton the login button
+     * @return
+     */
+    protected abstract Component createContent(TextField userNameField, PasswordField passwordField, Button loginButton);
+
+    /**
+     * Implement to handle the login. In {@link com.ejt.vaadin.loginform.LoginMode#DEFERRED deferred mode}, this method
+     * is called after the dummy POST request that triggers the password manager has been completed.
+     * In {@link com.ejt.vaadin.loginform.LoginMode#DIRECT direct mode} (the default setting),
+     * it is called directly when the user hits the enter key or clicks on the login button. In tha latter case,
+     * you cannot change the URL in the method or the password manager will not be triggered.
+     * @param userName the user name
+     * @param password the password
+     */
+    protected abstract void login(String userName, String password);
+
+    /**
+     * Returns the {@link LoginMode} for this login form.
+     * The default is {@link LoginMode#DIRECT}.
+     * @return the login mode
+     */
+    public LoginMode getLoginMode() {
+        return loginMode;
     }
 
     /**
@@ -105,32 +136,6 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      */
     public void setLoginMode(LoginMode loginMode) {
         this.loginMode = loginMode;
-    }
-
-    protected abstract void login();
-
-    /**
-     * Get the user name field. Call when building the layout and when validating a login.
-     * @return the user name field
-     */
-    protected TextField getUserNameField() {
-        return (TextField)getState().userNameFieldConnector;
-    }
-
-    /**
-     * Get the password field. Call when building the layout and when validating a login.
-     * @return the password field
-     */
-    protected PasswordField getPasswordField() {
-        return (PasswordField)getState().passwordFieldConnector;
-    }
-
-    /**
-     * Get the login button. Call when building the layout.
-     * @return the password field
-     */
-    protected Button getLoginButton() {
-        return (Button)getState().loginButtonConnector;
     }
 
     /**
@@ -186,10 +191,9 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         return "Login";
     }
 
-    private void directLogin() {
-        if (loginMode == LoginMode.DIRECT) {
-            login();
-        }
+    @Override
+    protected LoginFormState getState() {
+        return (LoginFormState)super.getState();
     }
 
     private void checkInitialized() {
@@ -198,8 +202,20 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         }
     }
 
-    @Override
-    protected LoginFormState getState() {
-        return (LoginFormState)super.getState();
+    private TextField getUserNameField() {
+        return (TextField)getState().userNameFieldConnector;
     }
+
+    private PasswordField getPasswordField() {
+        return (PasswordField)getState().passwordFieldConnector;
+    }
+
+    private Button getLoginButton() {
+        return (Button)getState().loginButtonConnector;
+    }
+
+    private void login() {
+        login(getUserNameField().getValue(), getPasswordField().getValue());
+    }
+
 }
