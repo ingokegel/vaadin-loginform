@@ -212,9 +212,9 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
             }
         });
 
-        setContent(createContent(getUserNameField(), getPasswordField(), getLoginButton()));
-
         initialized = true;
+
+        setContent(createContent(getUserNameField(), getPasswordField(), getLoginButton()));
     }
 
     private TextField getUserNameField() {
