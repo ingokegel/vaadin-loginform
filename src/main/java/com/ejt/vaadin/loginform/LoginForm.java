@@ -20,8 +20,6 @@ import com.ejt.vaadin.loginform.shared.LoginFormConnector;
 import com.ejt.vaadin.loginform.shared.LoginFormRpc;
 import com.ejt.vaadin.loginform.shared.LoginFormState;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.*;
 import com.vaadin.ui.AbstractSingleComponentContainer;
 import com.vaadin.ui.Button;
@@ -66,14 +64,6 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         }
         state.contextPath = contextPath;
 
-        //TODO limit shortcuts to login form
-        addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                directLogin();
-            }
-        });
-
         VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
             @Override
             public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
@@ -90,6 +80,13 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         });
 
         registerRpc(new LoginFormRpc() {
+            @Override
+            public void submitted() {
+                if (loginMode == LoginMode.DIRECT) {
+                    login();
+                }
+            }
+
             @Override
             public void submitCompleted() {
                 if (loginMode == LoginMode.DEFERRED) {
@@ -142,9 +139,17 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      */
     protected TextField createUserNameField() {
         checkInitialized();
-        TextField field = new TextField("User name");
+        TextField field = new TextField(getUserNameFieldCaption());
         field.focus();
         return field;
+    }
+
+    /**
+     * Override to change the caption of the user name field. The default value is "User name".
+     * @return the caption
+     */
+    protected String getUserNameFieldCaption() {
+        return "User name";
     }
 
     /**
@@ -153,7 +158,15 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      */
     protected PasswordField createPasswordField() {
         checkInitialized();
-        return new PasswordField("Password");
+        return new PasswordField(getPasswordFieldCaption());
+    }
+
+    /**
+     * Override to change the caption of the password field. The default value is "Password".
+     * @return the caption
+     */
+    protected String getPasswordFieldCaption() {
+        return "Password";
     }
 
     /**
@@ -162,13 +175,15 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      */
     protected Button createLoginButton() {
         checkInitialized();
-        Button button = new Button("Login", new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                directLogin();
-            }
-        });
-        return button;
+        return new Button(getLoginButtonCaption());
+    }
+
+    /**
+     * Override to change the caption of the login button. The default value is "Login".
+     * @return the caption
+     */
+    protected String getLoginButtonCaption() {
+        return "Login";
     }
 
     private void directLogin() {
@@ -179,7 +194,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     private void checkInitialized() {
         if (initialized) {
-            throw new IllegalStateException("Already initialized. Call the getter method instead of the create method.");
+            throw new IllegalStateException("Already initialized. The create methods may not be called explicitly.");
         }
     }
 

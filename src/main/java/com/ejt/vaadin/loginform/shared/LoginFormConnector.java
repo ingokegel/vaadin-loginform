@@ -23,7 +23,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -42,6 +41,7 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
 
     private VTextField passwordField;
     private VTextField userField;
+    private LoginFormRpc loginFormRpc;
 
     @Override
     public void updateCaption(ComponentConnector connector) {
@@ -57,7 +57,7 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
     protected void init() {
         super.init();
 
-        final LoginFormRpc loginFormRpc = getRpcProxy(LoginFormRpc.class);
+        loginFormRpc = getRpcProxy(LoginFormRpc.class);
         getWidget().addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
             @Override
             public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
@@ -97,8 +97,7 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
                 @Override
                 public void onKeyDown(KeyDownEvent event) {
                     if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-                        valuesChanged();
-                        getWidget().submit();
+                        login();
                     }
                 }
             });
@@ -114,21 +113,19 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
         }
     }
 
+    private void login() {
+        getWidget().submit();
+        valuesChanged();
+        loginFormRpc.submitted();
+    }
+
     private void addSubmitButtonClickHandler(Connector buttonConnector) {
         if (buttonConnector != null) {
             VButton button = ((ButtonConnector)buttonConnector).getWidget();
             button.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    // Vaadin click listener is fired first, so it's too late to call valuesChanged() here
-                    getWidget().submit();
-                }
-            });
-
-            button.addFocusHandler(new FocusHandler() {
-                @Override
-                public void onFocus(FocusEvent event) {
-                    valuesChanged();
+                    login();
                 }
             });
         }
