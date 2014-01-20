@@ -2,7 +2,7 @@ apply plugin: 'java'
 
 defaultTasks 'jar'
 
-version = '0.3'
+version = '0.3.1'
 ext.vaadinVersion='7.1.9'
 
 repositories {
