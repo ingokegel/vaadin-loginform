@@ -103,7 +103,10 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
             });
 
             Element element = textField.getElement();
-            element.setId(id);
+            String externalId = element.getId();
+            if (externalId == null || externalId.isEmpty() || externalId.startsWith("gwt-")) {
+                element.setId(id);
+            }
             DOM.setElementAttribute(element, "name", id);
             DOM.setElementAttribute(element, "autocomplete", "on");
 
