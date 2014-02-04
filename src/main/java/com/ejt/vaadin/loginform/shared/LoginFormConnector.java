@@ -93,14 +93,7 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
         if (connector != null) {
             VTextField textField = ((TextFieldConnector)connector).getWidget();
 
-            textField.addKeyDownHandler(new KeyDownHandler() {
-                @Override
-                public void onKeyDown(KeyDownEvent event) {
-                    if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-                        login();
-                    }
-                }
-            });
+            textField.addKeyDownHandler(new SubmitKeyHandler());
 
             Element element = textField.getElement();
             String externalId = element.getId();
@@ -143,4 +136,39 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
         }
     }
 
+    // for debugging
+    private native void log(Object object)/*-{
+      $wnd.console.log(object);
+    }-*/;
+
+    private class SubmitKeyHandler implements KeyDownHandler {
+
+        private int previousKeyCode;
+
+        @Override
+        public void onKeyDown(KeyDownEvent event) {
+            int keyCode = event.getNativeKeyCode();
+            if (keyCode == KeyCodes.KEY_ENTER) {
+                if (isInAutoComplete()) {
+                    previousKeyCode = keyCode;
+                } else {
+                    login();
+                }
+            } else {
+                previousKeyCode = keyCode;
+            }
+        }
+
+        private boolean isInAutoComplete() {
+            switch (previousKeyCode) {
+                case KeyCodes.KEY_PAGEUP:
+                case KeyCodes.KEY_PAGEDOWN:
+                case KeyCodes.KEY_UP:
+                case KeyCodes.KEY_DOWN:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
 }
