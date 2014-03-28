@@ -5,7 +5,7 @@ import com.ejt.vaadin.loginform.LoginMode;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 
-public class TestUi extends UI{
+public class TestUi extends UI {
 
     private VerticalLayout mainLayout;
 
@@ -17,10 +17,12 @@ public class TestUi extends UI{
         mainLayout.addComponent(new SimpleLoginForm(LoginMode.DIRECT));
         mainLayout.addComponent(new Label("Deferred mode:"));
         mainLayout.addComponent(new SimpleLoginForm(LoginMode.DEFERRED));
+        mainLayout.addComponent(new Label("Native login button:"));
+        mainLayout.addComponent(new NativeLoginForm(LoginMode.DIRECT));
         setContent(mainLayout);
     }
 
-    public class SimpleLoginForm extends DefaultHorizontalLoginForm {
+    private class SimpleLoginForm extends DefaultHorizontalLoginForm {
         private LoginMode loginMode;
 
         public SimpleLoginForm(LoginMode loginMode) {
@@ -35,6 +37,18 @@ public class TestUi extends UI{
                 " and password of length " + password.length() +
                 ", login mode " + loginMode
             ));
+        }
+    }
+
+    private class NativeLoginForm extends SimpleLoginForm {
+
+        public NativeLoginForm(LoginMode loginMode) {
+            super(loginMode);
+        }
+
+        @Override
+        protected Button createLoginButton() {
+            return new NativeButton("Native Login");
         }
     }
 }

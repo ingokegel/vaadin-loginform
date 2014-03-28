@@ -22,14 +22,17 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractSingleComponentContainerConnector;
 import com.vaadin.client.ui.VButton;
+import com.vaadin.client.ui.VNativeButton;
 import com.vaadin.client.ui.VTextField;
 import com.vaadin.client.ui.button.ButtonConnector;
+import com.vaadin.client.ui.nativebutton.NativeButtonConnector;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
@@ -116,15 +119,20 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
     }
 
     private void addSubmitButtonClickHandler(Connector buttonConnector) {
-        if (buttonConnector != null) {
-            VButton button = ((ButtonConnector)buttonConnector).getWidget();
-            button.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    login();
-                }
-            });
+        if (buttonConnector instanceof ButtonConnector) {
+            addSubmitButtonClickHandler(((ButtonConnector)buttonConnector).getWidget());
+        } else if (buttonConnector instanceof NativeButtonConnector) {
+            addSubmitButtonClickHandler(((NativeButtonConnector)buttonConnector).getWidget());
         }
+    }
+
+    private void addSubmitButtonClickHandler(FocusWidget button) {
+        button.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                login();
+            }
+        });
     }
 
     private void valuesChanged() {
