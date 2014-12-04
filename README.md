@@ -1,7 +1,7 @@
 # Vaadin LoginForm
 
 ## Usage
-Vaadin LoginForm is an add-on for [Vaadin](https://vaadin.com). It requires at least Vaadin 7.
+Vaadin LoginForm is an add-on for [Vaadin](https://vaadin.com). It requires at least Vaadin 7.3
 Specifically it will not work with Vaadin 6. To use it, you have to compile your own widgetset, using the
 precompiled widget set will not work with this addon.
 

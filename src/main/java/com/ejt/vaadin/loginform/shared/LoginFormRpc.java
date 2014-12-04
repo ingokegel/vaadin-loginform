@@ -19,6 +19,5 @@ package com.ejt.vaadin.loginform.shared;
 import com.vaadin.shared.communication.ServerRpc;
 
 public interface LoginFormRpc extends ServerRpc {
-    void submitted();
     void submitCompleted();
 }

@@ -20,7 +20,7 @@ import com.ejt.vaadin.loginform.LoginForm;
 import com.ejt.vaadin.loginform.client.LoginFormGWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -103,8 +103,8 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
             if (externalId == null || externalId.isEmpty() || externalId.startsWith("gwt-")) {
                 element.setId(id);
             }
-            DOM.setElementAttribute(element, "name", id);
-            DOM.setElementAttribute(element, "autocomplete", "on");
+            element.setAttribute("name", id);
+            element.setAttribute("autocomplete", "on");
 
             return textField;
         } else {
@@ -115,7 +115,6 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
     private void login() {
         getWidget().submit();
         valuesChanged();
-        loginFormRpc.submitted();
     }
 
     private void addSubmitButtonClickHandler(Connector buttonConnector) {

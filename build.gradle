@@ -2,8 +2,8 @@ apply plugin: 'java'
 
 defaultTasks 'jar'
 
-version = '0.3.3'
-ext.vaadinVersion='7.1.10'
+version = '0.4'
+ext.vaadinVersion='7.3.6'
 
 repositories {
     mavenCentral()
@@ -33,6 +33,10 @@ ext.compileClassPath = files(
 compileJava {
     sourceCompatibility = '1.6'
     targetCompatibility = '1.6'
+    String java6Home = System.getenv()['JAVA_1_6_HOME']
+    if (java6Home) {
+        options.bootClasspath = "${java6Home}/jre/lib/rt.jar"
+    }
 }
 
 clean {
@@ -66,6 +70,13 @@ task devmode(type: JavaExec) {
     main = 'com.google.gwt.dev.DevMode'
     jvmArgs = ['-XX:MaxPermSize=400m', '-Xmx800m']
     args = ['-noserver', '-war', 'build/idea/artifacts/exploded_war/VAADIN/widgetsets', 'com.ejt.vaadin.loginform.WidgetSet', '-startupUrl', 'http://localhost:8080/test', '-bindAddress', '0.0.0.0']
+}
+
+task superdevmode(type: JavaExec) {
+    classpath = compileClassPath
+    main = 'com.google.gwt.dev.codeserver.CodeServer'
+    jvmArgs = ['-XX:MaxPermSize=256m', '-Xmx512m']
+    args = ['com.ejt.vaadin.loginform.WidgetSet']
 }
 
 jar {
