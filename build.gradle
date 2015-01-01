@@ -35,7 +35,11 @@ compileJava {
     targetCompatibility = '1.6'
     String java6Home = System.getenv()['JAVA_1_6_HOME']
     if (java6Home) {
-        options.bootClasspath = "${java6Home}/jre/lib/rt.jar"
+        if (System.getProperty("os.name").toLowerCase().contains('mac')) {
+            options.bootClasspath = "${java6Home}/../Classes/classes.jar"
+        } else {
+            options.bootClasspath = "${java6Home}/jre/lib/rt.jar"
+        }
     }
 }
 
