@@ -116,8 +116,17 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
         }
     }
 
+    private void loginLater() {
+        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
+            @Override
+            public boolean execute() {
+                login();
+                return false;
+            }
+        }, 100);
+    }
+
     private void login() {
-        valuesChanged();
         getWidget().submit();
     }
 
@@ -163,7 +172,7 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
                 if (isInAutoComplete()) {
                     previousKeyCode = keyCode;
                 } else {
-                    login();
+                    loginLater();
                 }
             } else {
                 previousKeyCode = keyCode;
