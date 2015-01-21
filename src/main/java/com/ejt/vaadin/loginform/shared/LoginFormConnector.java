@@ -18,6 +18,7 @@ package com.ejt.vaadin.loginform.shared;
 
 import com.ejt.vaadin.loginform.LoginForm;
 import com.ejt.vaadin.loginform.client.LoginFormGWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -66,6 +67,7 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
         getWidget().addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
             @Override
             public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
+                valuesChanged();
                 loginFormRpc.submitCompleted();
             }
         });
@@ -99,12 +101,6 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
             VTextField textField = ((TextFieldConnector)connector).getWidget();
 
             textField.addKeyDownHandler(new SubmitKeyHandler());
-            textField.addValueChangeHandler(new ValueChangeHandler<String>() {
-                @Override
-                public void onValueChange(ValueChangeEvent<String> event) {
-                    valuesChanged();
-                }
-            });
 
             Element element = textField.getElement();
             String externalId = element.getId();
