@@ -19,7 +19,6 @@ package com.ejt.vaadin.loginform;
 import com.ejt.vaadin.loginform.shared.LoginFormConnector;
 import com.ejt.vaadin.loginform.shared.LoginFormRpc;
 import com.ejt.vaadin.loginform.shared.LoginFormState;
-
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
 
@@ -151,7 +150,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         state.passwordFieldConnector = createPasswordField();
         state.loginButtonConnector = createLoginButton();
 
-        String contextPath = VaadinService.getCurrentRequest().getContextPath();
+        String contextPath = Page.getCurrent().getLocation().getPath();
         if (contextPath.endsWith("/")) {
             contextPath = contextPath.substring(0, contextPath.length() - 1);
         }
