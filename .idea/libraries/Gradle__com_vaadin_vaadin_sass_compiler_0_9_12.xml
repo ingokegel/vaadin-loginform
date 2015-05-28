@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.vaadin:vaadin-sass-compiler:0.9.12">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.vaadin/vaadin-sass-compiler/0.9.12/d691eeee407801cbb9265dd7667da4c5c9d975e2/vaadin-sass-compiler-0.9.12.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.vaadin/vaadin-sass-compiler/0.9.12/451984679f587013c9b29fa5e02fb39f970fe44f/vaadin-sass-compiler-0.9.12-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

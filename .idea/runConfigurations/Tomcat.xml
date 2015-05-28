@@ -25,7 +25,7 @@
       <option name="LOCAL" value="true" />
     </RunnerSettings>
     <RunnerSettings RunnerId="JProfiler">
-      <option name="JVM" value="C:/Program Files/Java/jdk1.6.0_24" />
+      <option name="JVM" value="/Library/Java/Home" />
       <option name="WINDOW" value="false" />
     </RunnerSettings>
     <RunnerSettings RunnerId="Run" />
