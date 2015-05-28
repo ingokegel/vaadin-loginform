@@ -24,6 +24,8 @@ import com.vaadin.ui.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * Login form with auto-completion and auto-fill for all major browsers.
@@ -44,7 +46,21 @@ import java.io.PrintWriter;
 public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     private boolean initialized;
+    
+    private static final Method ON_LOGIN_METHOD;
 
+    static
+    {
+        try
+        {
+            ON_LOGIN_METHOD = LoginListener.class.getDeclaredMethod("onLogin", new Class[] { LoginEvent.class });
+        }
+        catch (final java.lang.NoSuchMethodException e)
+        {
+            // This should never happen
+            throw new java.lang.RuntimeException("Internal error finding methods in LoginForm");
+        }
+    }
     protected LoginForm() {
     }
 
@@ -68,7 +84,9 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      * @param userName the user name
      * @param password the password
      */
-    protected abstract void login(String userName, String password);
+    protected void login(String userName, String password) {
+        fireEvent(new LoginEvent(LoginForm.this,userName, password));
+    }
 
     /**
      * Customize the user name field. Only for overriding, do not call.
@@ -199,4 +217,64 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         login(getUserNameField().getValue(), getPasswordField().getValue());
     }
 
+    /**
+     * Adds LoginListener to handle login logic
+     *
+     * @param pLoginListener
+     */
+    public void addLoginListener(LoginListener pLoginListener) {
+        addListener(LoginEvent.class, pLoginListener, ON_LOGIN_METHOD);
+    }
+
+    /**
+     * Removes LoginListener
+     *
+     * @param pLoginListener
+     */
+    public void removeLoginListener(LoginListener pLoginListener) {
+        removeListener(LoginEvent.class, pLoginListener, ON_LOGIN_METHOD);
+    }
+
+    /**
+     * Login listener listen LoginEvents sent from
+     * CustomLoginForm
+     */
+    public interface LoginListener extends Serializable {
+        
+        /**
+         * This method is fired on each login.
+         *
+         * @param pEvent
+         */
+        void onLogin(final LoginEvent pEvent);
+    }
+
+    /**
+     * This event is sent when login form is submitted.
+     */
+    public static class LoginEvent extends Event {
+        
+        private final String userName;
+        private final String pwd;
+
+        private LoginEvent(final Component pSource, final String pUserName, final String pPwd) {
+            super(pSource);
+            userName = pUserName;
+            pwd = pPwd;
+        }
+
+        /**
+         * @return username value, can be <code>null</code> or empty
+         */
+        public String getUserName() {
+            return userName;
+        }
+
+        /**
+         * @return password value, can be <code>null</code> or empty
+         */
+        public String getPassword() {
+            return pwd;
+        }
+    }
 }
