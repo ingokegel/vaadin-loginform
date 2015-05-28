@@ -150,7 +150,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         state.passwordFieldConnector = createPasswordField();
         state.loginButtonConnector = createLoginButton();
 
-        String contextPath = Page.getCurrent().getLocation().getPath();
+        String contextPath =  VaadinServlet.getCurrent().getServletContext().getContextPath();
         if (contextPath.endsWith("/")) {
             contextPath = contextPath.substring(0, contextPath.length() - 1);
         }
