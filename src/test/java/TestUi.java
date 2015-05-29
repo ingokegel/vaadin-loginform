@@ -1,4 +1,4 @@
-import com.ejt.vaadin.loginform.DefaultHorizontalLoginForm;
+import com.ejt.vaadin.loginform.*;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
@@ -21,13 +21,18 @@ public class TestUi extends UI {
 
     private class SimpleLoginForm extends DefaultHorizontalLoginForm {
 
-        @Override
-        protected void login(String userName, String password) {
-            mainLayout.addComponent(new Label(
-                "Logged in with user name " + userName +
-                " and password of length " + password.length()
-            ));
+        public SimpleLoginForm() {
+            addLoginListener(new LoginListener() {
+                @Override
+                public void onLogin(LoginEvent event) {
+                    mainLayout.addComponent(new Label(
+                            "Logged in with user name " + event.getUserName() +
+                                    " and password of length " + event.getPassword().length()
+                    ));
+                }
+            });
         }
+
     }
 
     private class NativeLoginForm extends SimpleLoginForm {

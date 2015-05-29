@@ -158,7 +158,7 @@ public class LoginFormConnector extends AbstractSingleComponentContainerConnecto
 
     // for debugging
     private native void log(Object object)/*-{
-      $wnd.console.log(object);
+        $wnd.console.log(object);
     }-*/;
 
     private class SubmitKeyHandler implements KeyDownHandler {

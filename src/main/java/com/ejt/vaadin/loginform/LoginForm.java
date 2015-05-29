@@ -33,10 +33,10 @@ import java.lang.reflect.Method;
  * {@link #createContent(com.vaadin.ui.TextField, com.vaadin.ui.PasswordField, com.vaadin.ui.Button)} method
  * to build the layout using the text fields and login button that are passed to that method.
  * The supplied components are specially treated so that they work with password managers.
- * <p>
+ * <p/>
  * Implement the abstract {@link #login(String, String)} method to handle a login. User name and password are
  * passed to this method.
- * <p>
+ * <p/>
  * To customize the fields or to replace them with your own implementations, you can override
  * {@link #createUserNameField()}, {@link #createPasswordField()} and {@link #createLoginButton()}.
  * These methods are called automatically and cannot be called by your code.
@@ -45,22 +45,19 @@ import java.lang.reflect.Method;
  */
 public abstract class LoginForm extends AbstractSingleComponentContainer {
 
-    private boolean initialized;
-    
     private static final Method ON_LOGIN_METHOD;
 
-    static
-    {
-        try
-        {
-            ON_LOGIN_METHOD = LoginListener.class.getDeclaredMethod("onLogin", new Class[] { LoginEvent.class });
-        }
-        catch (final java.lang.NoSuchMethodException e)
-        {
+    static {
+        try {
+            ON_LOGIN_METHOD = LoginListener.class.getDeclaredMethod("onLogin", new Class[] {LoginEvent.class});
+        } catch (final java.lang.NoSuchMethodException e) {
             // This should never happen
-            throw new java.lang.RuntimeException("Internal error finding methods in LoginForm");
+            throw new java.lang.RuntimeException("Internal error finding methods in LoginListener");
         }
     }
+
+    private boolean initialized;
+
     protected LoginForm() {
     }
 
@@ -71,25 +68,29 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      * {@link #createLoginButton()}. If you only want to change the default captions, override
      * {@link #getUserNameFieldCaption()}, {@link #getPasswordFieldCaption()} and {@link #getLoginButtonCaption()}.
      * You do not have to use the login button in your layout.
+     *
      * @param userNameField the user name text field
      * @param passwordField the password field
-     * @param loginButton the login button
+     * @param loginButton   the login button
      * @return
      */
     protected abstract Component createContent(TextField userNameField, PasswordField passwordField, Button loginButton);
 
     /**
-     * Implement to handle the login. This method is called after the dummy POST request that triggers the
-     * password manager has been completed.
+     * You can override this method to handle the login directly without using the event mechanism.
+     * The login event will only be fired, if you call super.login(..) in your overriding method.
+     * This method is called after the dummy POST request that triggers the password manager has been completed.
+     *
      * @param userName the user name
      * @param password the password
      */
     protected void login(String userName, String password) {
-        fireEvent(new LoginEvent(LoginForm.this,userName, password));
+        fireEvent(new LoginEvent(LoginForm.this, userName, password));
     }
 
     /**
      * Customize the user name field. Only for overriding, do not call.
+     *
      * @return the user name field
      */
     protected TextField createUserNameField() {
@@ -101,6 +102,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     /**
      * Override to change the caption of the user name field. The default value is "User name".
+     *
      * @return the caption
      */
     protected String getUserNameFieldCaption() {
@@ -109,6 +111,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     /**
      * Customize the password field. Only for overriding, do not call.
+     *
      * @return the password field
      */
     protected PasswordField createPasswordField() {
@@ -118,6 +121,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     /**
      * Override to change the caption of the password field. The default value is "Password".
+     *
      * @return the caption
      */
     protected String getPasswordFieldCaption() {
@@ -126,6 +130,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     /**
      * Customize the login button. Only for overriding, do not call.
+     *
      * @return the login button
      */
     protected Button createLoginButton() {
@@ -135,6 +140,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     /**
      * Override to change the caption of the login button. The default value is "Login".
+     *
      * @return the caption
      */
     protected String getLoginButtonCaption() {
@@ -168,7 +174,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         state.passwordFieldConnector = createPasswordField();
         state.loginButtonConnector = createLoginButton();
 
-        String contextPath =  VaadinServlet.getCurrent().getServletContext().getContextPath();
+        String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
         if (contextPath.endsWith("/")) {
             contextPath = contextPath.substring(0, contextPath.length() - 1);
         }
@@ -218,21 +224,21 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
     }
 
     /**
-     * Adds LoginListener to handle login logic
+     * Adds a listener to handle the login.
      *
-     * @param pLoginListener
+     * @param listener the listener to be added
      */
-    public void addLoginListener(LoginListener pLoginListener) {
-        addListener(LoginEvent.class, pLoginListener, ON_LOGIN_METHOD);
+    public void addLoginListener(LoginListener listener) {
+        addListener(LoginEvent.class, listener, ON_LOGIN_METHOD);
     }
 
     /**
-     * Removes LoginListener
+     * Removes a listener
      *
-     * @param pLoginListener
+     * @param listener the listener to be removed
      */
-    public void removeLoginListener(LoginListener pLoginListener) {
-        removeListener(LoginEvent.class, pLoginListener, ON_LOGIN_METHOD);
+    public void removeLoginListener(LoginListener listener) {
+        removeListener(LoginEvent.class, listener, ON_LOGIN_METHOD);
     }
 
     /**
@@ -240,41 +246,47 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      * CustomLoginForm
      */
     public interface LoginListener extends Serializable {
-        
+
         /**
-         * This method is fired on each login.
+         * This method is fired for each login.
+         * Note that the invocation is asynchronous since it is triggered by a dummy form submission, so
+         * Vaadin TestBench will not wait for it automatically.
          *
-         * @param pEvent
+         * @param event
          */
-        void onLogin(final LoginEvent pEvent);
+        void onLogin(final LoginEvent event);
     }
 
     /**
-     * This event is sent when login form is submitted.
+     * This event is sent when the login form is submitted.
      */
     public static class LoginEvent extends Event {
-        
-        private final String userName;
-        private final String pwd;
 
-        private LoginEvent(final Component pSource, final String pUserName, final String pPwd) {
-            super(pSource);
-            userName = pUserName;
-            pwd = pPwd;
+        private final String userName;
+        private final String password;
+
+        private LoginEvent(final Component source, final String userName, final String password) {
+            super(source);
+            this.userName = userName;
+            this.password = password;
         }
 
         /**
-         * @return username value, can be <code>null</code> or empty
+         * Get the user name entered by the user.
+         *
+         * @return the user name
          */
         public String getUserName() {
             return userName;
         }
 
         /**
-         * @return password value, can be <code>null</code> or empty
+         * Get the password entered by the user.
+         *
+         * @return the password value
          */
         public String getPassword() {
-            return pwd;
+            return password;
         }
     }
 }
