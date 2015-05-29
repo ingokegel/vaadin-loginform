@@ -24,7 +24,7 @@ import com.vaadin.ui.*;
  * and override {@link LoginForm#createContent(com.vaadin.ui.TextField, com.vaadin.ui.PasswordField, com.vaadin.ui.Button)}
  * to create an arbitrary layout.
  */
-public abstract class DefaultVerticalLoginForm extends LoginForm {
+public class DefaultVerticalLoginForm extends LoginForm {
     @Override
     protected Component createContent(TextField userNameField, PasswordField passwordField, Button loginButton) {
         VerticalLayout layout = new VerticalLayout();
