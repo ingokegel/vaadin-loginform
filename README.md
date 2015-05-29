@@ -6,19 +6,20 @@ Specifically it will not work with Vaadin 6. To use it, you have to compile your
 precompiled widget set will not work with this addon.
 
 To create a login form that supports auto-completion and auto-fill for modern versions of Firefox, Chrome, IE and
-Safari, derive from `com.ejt.vaadin.loginform.VerticalLoginForm` or `com.ejt.vaadin.loginform.HorizontalLoginForm`,
-like this:
+Safari, you can use the classes `com.ejt.vaadin.loginform.DefaultVerticalLoginForm` or 
+`com.ejt.vaadin.loginform.DefaultHorizontalLoginForm` and add a listener to handle login events:
 
-    public class SimpleLoginForm extends VerticalLoginForm {
-
+    // Add the loginForm instance below to your UI
+    DefaultVerticalLoginForm loginForm = new DefaultVerticalLoginForm();
+    loginForm.addLoginListener(new LoginListener() {
         @Override
-        protected void login(String userName, String password) {
+        public void onLogin(LoginEvent event) {
             System.err.println(
-                "Logged in with user name " + userName +
-                " and password of length " + password.length()
-            );
+                    "Logged in with user name " + event.getUserName() +
+                            " and password of length " + event.getPassword().length());
+    
         }
-    }
+    });
 
 For arbitrary layouts, extend `com.ejt.vaadin.loginform.LoginForm` and implement `createContent` as well:
 
@@ -36,6 +37,7 @@ For arbitrary layouts, extend `com.ejt.vaadin.loginform.LoginForm` and implement
             return layout;
         }
 
+        // You can also override this method to handle the login directly, instead of using the event mechanism
         @Override
         protected void login(String userName, String password) {
             System.err.println(
