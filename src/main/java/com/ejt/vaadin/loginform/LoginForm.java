@@ -56,6 +56,21 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         }
     }
 
+    private static final RequestHandler REQUEST_HANDLER = new RequestHandler() {
+        @Override
+        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
+            if (LoginFormConnector.LOGIN_URL.equals(request.getPathInfo())) {
+                response.setContentType("text/html; charset=utf-8");
+                response.setCacheTime(-1);
+                PrintWriter writer = response.getWriter();
+                writer.append("<html>Success</html>");
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
+
     private boolean initialized;
 
     protected LoginForm() {
@@ -180,21 +195,9 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         }
         state.contextPath = contextPath;
 
-        VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
-            @Override
-            public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
-                if (LoginFormConnector.LOGIN_URL.equals(request.getPathInfo())) {
-                    response.setContentType("text/html; charset=utf-8");
-                    response.setCacheTime(-1);
-                    PrintWriter writer = response.getWriter();
-                    writer.append("<html>Success</html>");
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-
+        if (!VaadinSession.getCurrent().getRequestHandlers().contains(REQUEST_HANDLER)) {
+            VaadinSession.getCurrent().addRequestHandler(REQUEST_HANDLER);
+        }
         registerRpc(new LoginFormRpc() {
             @Override
             public void submitCompleted() {
