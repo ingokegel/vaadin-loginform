@@ -173,6 +173,14 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         init();
     }
 
+    /**
+     * Clears the contents of both the user name and the password text fields
+     **/
+    public void clear() {
+        getUserNameField().clear();
+        getPasswordField().clear();
+    }
+
     private void checkInitialized() {
         if (initialized) {
             throw new IllegalStateException("Already initialized. The create methods may not be called explicitly.");
