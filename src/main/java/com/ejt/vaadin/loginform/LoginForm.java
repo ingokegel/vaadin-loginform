@@ -22,6 +22,8 @@ import com.ejt.vaadin.loginform.shared.LoginFormState;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
 
+import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -197,11 +199,7 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         state.passwordFieldConnector = createPasswordField();
         state.loginButtonConnector = createLoginButton();
 
-        String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
-        if (contextPath.endsWith("/")) {
-            contextPath = contextPath.substring(0, contextPath.length() - 1);
-        }
-        state.contextPath = contextPath;
+        state.contextPath = getContextPath();
 
         if (!VaadinSession.getCurrent().getRequestHandlers().contains(REQUEST_HANDLER)) {
             VaadinSession.getCurrent().addRequestHandler(REQUEST_HANDLER);
@@ -216,6 +214,36 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
         initialized = true;
 
         setContent(createContent(getUserNameField(), getPasswordField(), getLoginButton()));
+    }
+
+    private String getContextPath() {
+        String contextPath = getContextPathFromService();
+        if (contextPath.endsWith("/")) {
+            return contextPath.substring(0, contextPath.length() - 1);
+        } else {
+            return contextPath;
+        }
+    }
+
+    private String getContextPathFromService() {
+        VaadinService service = VaadinService.getCurrent();
+        if (service instanceof VaadinPortletService) {
+            PortletRequest portletRequest = VaadinPortletService.getCurrentPortletRequest();
+            if (portletRequest != null) {
+                return portletRequest.getContextPath();
+            } else {
+                return null;
+            }
+        } else if (service instanceof VaadinServletService) {
+            HttpServletRequest servletRequest = VaadinServletService.getCurrentServletRequest();
+            if (servletRequest != null) {
+                return servletRequest.getContextPath();
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     private TextField getUserNameField() {
