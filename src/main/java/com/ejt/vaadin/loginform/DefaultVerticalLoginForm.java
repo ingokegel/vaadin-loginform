@@ -26,7 +26,7 @@ import com.vaadin.ui.*;
  */
 public class DefaultVerticalLoginForm extends LoginForm {
     @Override
-    protected Component createContent(TextField userNameField, PasswordField passwordField, Button loginButton) {
+    protected VerticalLayout createContent(TextField userNameField, PasswordField passwordField, Button loginButton) {
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
         layout.setMargin(true);

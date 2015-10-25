@@ -26,7 +26,7 @@ import com.vaadin.ui.*;
  */
 public class DefaultHorizontalLoginForm extends LoginForm {
     @Override
-    protected Component createContent(TextField userNameField, PasswordField passwordField, Button loginButton) {
+    protected HorizontalLayout createContent(TextField userNameField, PasswordField passwordField, Button loginButton) {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSpacing(true);
         layout.setMargin(true);

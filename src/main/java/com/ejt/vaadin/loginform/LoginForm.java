@@ -179,8 +179,14 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      * Clears the contents of both the user name and the password text fields
      **/
     public void clear() {
-        getUserNameField().clear();
-        getPasswordField().clear();
+        clear(getUserNameField());
+        clear(getPasswordField());
+    }
+
+    private void clear(AbstractTextField textField) {
+        if (textField != null) {
+            textField.clear();
+        }
     }
 
     private void checkInitialized() {

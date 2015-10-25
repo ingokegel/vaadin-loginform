@@ -13,7 +13,9 @@ public class TestUi extends UI {
         mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
         mainLayout.addComponent(new Label("Vaadin button:"));
-        mainLayout.addComponent(new SimpleLoginForm());
+        final SimpleLoginForm loginForm = new SimpleLoginForm();
+        loginForm.clear(); // should work even if not displayed
+        mainLayout.addComponent(loginForm);
         mainLayout.addComponent(new Label("Native login button:"));
         mainLayout.addComponent(new NativeLoginForm());
         setContent(mainLayout);
@@ -31,6 +33,22 @@ public class TestUi extends UI {
                     ));
                 }
             });
+
+        }
+
+        @Override
+        protected HorizontalLayout createContent(TextField userNameField, PasswordField passwordField, Button loginButton) {
+            HorizontalLayout layout = super.createContent(userNameField, passwordField, loginButton);
+            Button clearButton = new Button("Clear");
+            clearButton.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent event) {
+                    clear();
+                }
+            });
+            layout.addComponent(clearButton);
+            layout.setComponentAlignment(clearButton, Alignment.BOTTOM_LEFT);
+            return layout;
         }
 
     }
