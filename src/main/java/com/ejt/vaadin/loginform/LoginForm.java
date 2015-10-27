@@ -224,7 +224,9 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
 
     private String getContextPath() {
         String contextPath = getContextPathFromService();
-        if (contextPath.endsWith("/")) {
+        if (contextPath == null) {
+            return "";
+        } else if (contextPath.endsWith("/")) {
             return contextPath.substring(0, contextPath.length() - 1);
         } else {
             return contextPath;
