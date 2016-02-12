@@ -133,7 +133,11 @@ public abstract class LoginForm extends AbstractSingleComponentContainer {
      */
     protected PasswordField createPasswordField() {
         checkInitialized();
-        return new PasswordField(getPasswordFieldCaption());
+        return new PasswordField(getPasswordFieldCaption()) {
+            @Override
+            public void setInputPrompt(String inputPrompt) {
+            }
+        };
     }
 
     /**
